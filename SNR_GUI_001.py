@@ -42,7 +42,7 @@ class SNR_GUI(QWidget):
         self.pre = args.GalaxyName
         
         self.initUI()
-    
+
     
     def initUI(self):
          
@@ -93,6 +93,9 @@ class SNR_GUI(QWidget):
         self.p3.plot(self.cube._wave, self.cube._data[:, self.x_mid, self.y_mid]/np.median(self.cube._data[:, self.x_mid, self.y_mid]), pen=(0,0,0), name='Input')
         self.p3.setXRange(min(self.cube._wave), max(self.cube._wave))
         self.p3.setYRange(-1.0, 2.0)
+        self.textposx =  0
+        self.textposy = 0
+
         
         #cross hair and text
         self.text = pg.TextItem(anchor=(0,1),color=(255,153,51))
@@ -103,8 +106,9 @@ class SNR_GUI(QWidget):
         self.p1.addItem(self.hLine, ignoreBounds=True)
         self.vb = self.p1.vb
         
-        self.proxy = pg.SignalProxy(self.p1.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
-        #self.proxy1 = pg.SignalProxy(self.p1.scene().sigMouseClicked, rateLimit=60, slot=self.mouseClickImg)
+
+        # executions
+        self.proxy = pg.SignalProxy(self.p1.scene().sigMouseMoved, rateLimit=120, slot=self.mouseMoved)
         self.image1.mouseClickEvent = self.mouseClickImg
 
             
@@ -159,7 +163,7 @@ class SNR_GUI(QWidget):
         for xvar in range(self.x):
             for yvar in range(self.y):
                 if self.cube._data[300, yvar, xvar] !=0:
-                    snrEsti = np.median(self.cube._data[2000:2500,yvar,xvar])/np.std(self.cube._data[2000:2500,yvar,xvar])                   
+                    snrEsti = np.median(self.cube._data[1500:2000,yvar,xvar])/np.std(self.cube._data[1500:2000,yvar,xvar])                   
                     self.snr.append(snrEsti)
                 else:
                     self.snr.append(0)
@@ -173,22 +177,23 @@ class SNR_GUI(QWidget):
     
     def mouseMoved(self, evt):
         pos = evt[0]  ## using signal proxy turns original arguments into a tuple
-    
+        
         if self.p1.sceneBoundingRect().contains(pos):
             mousePoint = self.p1.vb.mapSceneToView(pos)
             indexx = int(np.floor(mousePoint.x()))
             indexy = int(np.floor(mousePoint.y()))
     
             if (indexx >= 0 and indexx <= self.x) and (indexy >= 0 and indexy <= self.y):
-                self.text.setText("x=%1.0f, y=%1.0f, flux=%0.01f" % (indexx,indexy,self.imageData[indexy,indexx]))
-                textposx = mousePoint.x()
-                textposy = mousePoint.y()
+                self.text.setText("x=%1.0f, y=%1.0f, SNR=%0.01f" % (indexx,indexy,self.imageData[indexx,indexy]))
+                self.textposx = mousePoint.x()
+                self.textposy = mousePoint.y()
             if (indexx > self.x_mid): #and indexx < (len(imageData)+len(imageData)*0.3)):
-                 textposx = mousePoint.x() - int(self.x * 0.4)
+                self.textposx = mousePoint.x() - int(self.x * 0.4)
             if (indexy > self.y - self.y * .1):
-                textposy = mousePoint.y()-int(self.y * 0.1)
-    
-            self.text.setPos(textposx,textposy)
+                self.textposy = mousePoint.y()-int(self.y * 0.1)
+            
+
+            self.text.setPos(self.textposx,self.textposy)
             self.vLine.setPos(mousePoint.x())
             self.hLine.setPos(mousePoint.y())
     
@@ -223,3 +228,5 @@ if __name__ == '__main__':
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         ex = SNR_GUI()
         sys.exit(app.exec_())
+
+
