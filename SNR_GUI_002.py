@@ -130,7 +130,7 @@ class SNR_GUI(QWidget):
         if self.number == str(2):
             self.p3.plot(self.cube2._wave, self.cube2._data[:,self.y_mid, self.x_mid], pen=(0,153,153))
         self.p3.setXRange(min(self.cube._wave), max(self.cube._wave))
-        self.p3.setYRange(np.amin(self.cube._data[:, self.y_mid, self.x_mid]), np.amax(self.cube._data[:, self.x_mid, self.x_mid])) 
+        self.p3.setYRange(np.amin(self.cube._data[:, self.y_mid, self.x_mid]), np.amax(self.cube._data[:, self.y_mid, self.x_mid])) 
         self.textposx =  0
         self.textposy = 0
 
@@ -214,7 +214,7 @@ class SNR_GUI(QWidget):
             self.imagesum2 = np.transpose(self.map2)/1e5
             print("stack data cube 2: --- %s seconds ---" % (time.time() - start_time))
         else:
-            self.imagesum2 = self.stackflux()
+            self.imagesum2 = self.cube[7].data
        
         print("stack data cube 2: --- %s seconds ---" % (time.time() - start_time))
         
@@ -253,6 +253,7 @@ class SNR_GUI(QWidget):
                         self.snr2.append(snrEsti)
                     else:
                         self.snr2.append(0)
+            
         else: 
             self.snr2 = self.SNR_data()
 
