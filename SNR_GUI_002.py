@@ -29,15 +29,13 @@
 #    
 ##########################################
 
-
-from PyQt5.QtGui import * 
+# interface packages
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
 import pyqtgraph as pg
 
+# calulation packages
 import numpy as np
 import argparse
-import pylab
 import sys
 import os
 import numpy as np
