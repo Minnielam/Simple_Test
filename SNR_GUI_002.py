@@ -127,7 +127,8 @@ class SNR_GUI(QWidget):
 
         self.p3 = self.window.addPlot(title='Input', row=1, col=0, colspan=3)
         self.p3.plot(self.cube._wave, self.cube._data[:, self.y_mid, self.x_mid], pen=(0,0,0), name='Input')
-        self.p3.plot(self.cube2._wave, self.cube2._data[:,self.y_mid, self.x_mid], pen=(0,153,153))
+        if self.number == str(2):
+            self.p3.plot(self.cube2._wave, self.cube2._data[:,self.y_mid, self.x_mid], pen=(0,153,153))
         self.p3.setXRange(min(self.cube._wave), max(self.cube._wave))
         self.p3.setYRange(np.amin(self.cube._data[:, self.y_mid, self.x_mid]), np.amax(self.cube._data[:, self.x_mid, self.x_mid])) 
         self.textposx =  0
@@ -304,7 +305,8 @@ class SNR_GUI(QWidget):
         #Add new data
         self.p3.setYRange(np.amin(self.cube._data[:, self.pixely, self.pixelx]), np.amax(self.cube._data[:, self.pixely, self.pixelx])) 
         self.p3.plot(self.cube._wave, self.cube._data[:, self.pixely, self.pixelx], pen=(0,0,0), name="Input")
-        self.p3.plot(self.cube2._wave, self.cube2._data[:,self.pixely, self.pixelx], pen=(0,153,153))
+        if self.number == str(2):
+            self.p3.plot(self.cube2._wave, self.cube2._data[:,self.pixely, self.pixelx], pen=(0,153,153))
 
 
 # Start Qt event loop unless running in interactive mode or using pyside
