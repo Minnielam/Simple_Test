@@ -26,7 +26,6 @@
 # To-Do List:
 # Add Raise ERROR messages
 # Try to make it prettier
-# Use different color in different cubes
 #    
 ##########################################
 
@@ -104,11 +103,12 @@ class SNR_GUI(QWidget):
         self.image2 = pg.ImageItem()
 
         if self.number == 1:
-
+            
             self.image2.setImage(image = self.SNR_data())
 
         else: 
             self.SNR_data_red()
+            self.stackflux_red()
             self.SNR_data() 
             self.image2.setImage(image = self.stackflux_red())
             
@@ -128,10 +128,10 @@ class SNR_GUI(QWidget):
         # set third plot
 
         self.p3 = self.window.addPlot(title='Input', row=1, col=0, colspan=3)
-        self.p3.plot(self.cube._wave, self.cube._data[:, self.x_mid, self.y_mid], pen=(0,0,0), name='Input')
-        
+        self.p3.plot(self.cube._wave, self.cube._data[:, self.y_mid, self.x_mid], pen=(0,0,0), name='Input')
+        self.p3.plot(self.cube2._wave, self.cube2._data[:,self.y_mid, self.x_mid], pen=(0,153,153))
         self.p3.setXRange(min(self.cube._wave), max(self.cube._wave))
-        self.p3.setYRange(np.amin(self.cube._data[:, self.x_mid, self.y_mid]), np.amax(self.cube._data[:, self.x_mid, self.y_mid])) 
+        self.p3.setYRange(np.amin(self.cube._data[:, self.y_mid, self.x_mid]), np.amax(self.cube._data[:, self.x_mid, self.x_mid])) 
         self.textposx =  0
         self.textposy = 0
 
@@ -150,8 +150,8 @@ class SNR_GUI(QWidget):
         self.p2.addItem(self.text2)
         self.vLine2 = pg.InfiniteLine(angle=90, movable=False, pen=(255,153,51))
         self.hLine2 = pg.InfiniteLine(angle=0, movable=False, pen=(255,153,51))
-        self.p1.addItem(self.vLine2, ignoreBounds=True)
-        self.p1.addItem(self.hLine2, ignoreBounds=True)
+        self.p2.addItem(self.vLine2, ignoreBounds=True)
+        self.p2.addItem(self.hLine2, ignoreBounds=True)
         self.vb2 = self.p2.vb
 
         
@@ -159,6 +159,9 @@ class SNR_GUI(QWidget):
         # executions
         self.proxy = pg.SignalProxy(self.p1.scene().sigMouseMoved, rateLimit=120, slot=self.mouseMoved)
         self.image1.mouseClickEvent = self.mouseClickImg
+
+        self.proxy2 = pg.SignalProxy(self.p2.scene().sigMouseMoved, rateLimit=120, slot=self.mouseMoved)
+        self.image2.mouseClickEvent = self.mouseClickImg
                 
     
     def paradise_data(self):
@@ -197,7 +200,7 @@ class SNR_GUI(QWidget):
         self.map= self.cube[6].data
         self.imagesum = np.transpose(self.map)/1e5
 
-        print("stack data blue cube : --- %s seconds ---" % (time.time() - start_time))
+        print("stack data cube 1: --- %s seconds ---" % (time.time() - start_time))
 
         
         return self.imagesum
@@ -210,10 +213,11 @@ class SNR_GUI(QWidget):
         if self.number == str(2):
             self.map2= self.cube2[6].data
             self.imagesum2 = np.transpose(self.map2)/1e5
-            print("stack data red cube: --- %s seconds ---" % (time.time() - start_time))
+            print("stack data cube 2: --- %s seconds ---" % (time.time() - start_time))
         else:
             self.imagesum2 = self.stackflux()
-
+       
+        print("stack data cube 2: --- %s seconds ---" % (time.time() - start_time))
         
         return self.imagesum2
 
@@ -233,7 +237,7 @@ class SNR_GUI(QWidget):
 
         self.imageData = np.array(self.snr).reshape(self.x,self.y)
 
-        print("SNR calculation: -- %s seconds ---" % (time.time() - start_time))
+        print("SNR calculation in cube 1: -- %s seconds ---" % (time.time() - start_time))
          
         return self.imageData
 
@@ -255,7 +259,7 @@ class SNR_GUI(QWidget):
 
         self.imageData2 = np.array(self.snr2).reshape(self.x,self.y)
 
-        print("SNR calculation in red cube: -- %s seconds ---" % (time.time() - start_time))
+        print("SNR calculation in cube 2: -- %s seconds ---" % (time.time() - start_time))
          
         return self.imageData2
 
@@ -283,6 +287,11 @@ class SNR_GUI(QWidget):
             self.text.setPos(self.textposx,self.textposy)
             self.vLine.setPos(mousePoint.x())
             self.hLine.setPos(mousePoint.y())
+
+            self.text2.setPos(self.textposx,self.textposy)
+            self.vLine2.setPos(mousePoint.x())
+            self.hLine2.setPos(mousePoint.y())
+
     
     
     def mouseClickImg(self, event):
@@ -297,7 +306,7 @@ class SNR_GUI(QWidget):
         #Add new data
         self.p3.setYRange(np.amin(self.cube._data[:, self.pixely, self.pixelx]), np.amax(self.cube._data[:, self.pixely, self.pixelx])) 
         self.p3.plot(self.cube._wave, self.cube._data[:, self.pixely, self.pixelx], pen=(0,0,0), name="Input")
-
+        self.p3.plot(self.cube2._wave, self.cube2._data[:,self.pixely, self.pixelx], pen=(0,153,153))
 
 
 # Start Qt event loop unless running in interactive mode or using pyside
